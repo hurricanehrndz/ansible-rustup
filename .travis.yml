@@ -9,9 +9,7 @@ matrix:
   include:
     - os: linux
       env:
-        - ANSIBLE_VERSIONS_2="v2.9.0rc5"
-        - INSTALL_TYPE_2="git"
-        - ANSIBLE_LABEL_2="v2.9rc5"
+        - ANSIBLE_VERSION="stable-2.9"
         - MOLECULE_SCENARIO="default"
 
 before_install:
@@ -23,9 +21,12 @@ before_install:
 
 install: |
   pip3 install -U pip
-  avm_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
-  git clone https://github.com/ahelal/avm.git "${avm_dir}" > /dev/null 2>&1
-  /bin/sh "${avm_dir}/setup.sh"
+  ansible_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
+  git clone -b "\'${ANSIBLE_VERSION\'" \
+    --single-branch \
+     --depth 1 \
+    https://github.com/ansible/ansible.git "${ansible-dir}" > /dev/null 2>&1
+  python3 "${ansible_dir}/setup.sh" install
   pip3 install testinfra "molecule[podman]"
 script:
   - molecule --version
