@@ -23,10 +23,10 @@ install:
   - pip3 install -U pip
   - |
     ansible_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
-    git clone -b "\'${ANSIBLE_VERSION}\'" \
+    git clone -b "${ANSIBLE_VERSION}" \
       --single-branch \
       --depth 1 \
-      https://github.com/ansible/ansible.git "${ansible_dir}" > /dev/null 2>&1
+      https://github.com/ansible/ansible "${ansible_dir}"
     python3 "${ansible_dir}/setup.py" install
   - pip3 install testinfra "molecule[podman]"
 script:
