@@ -1,0 +1,84 @@
+---
+
+- name: Get rustup_user home
+  become: yes
+  getent:
+    database: passwd
+    key: "{{ rustup_user }}"
+    split: ":"
+
+- name: set rustup user home
+  set_fact:
+    rustup_user_home: "{{ getent_passwd[rustup_user][4] }}"
+
+- name: set rustup user shell
+  set_fact:
+    rustup_user_shell: "{{ getent_passwd[rustup_user][5] }}"
+
+- name: create temporary install directory
+  tempfile:
+    path: "{{ rustup_user_home }}"
+    state: directory
+    suffix: .install
+  register: temp_install_dir
+  changed_when: false
+
+- name: "Install RustUp"
+  shell: |
+    set -o pipefail
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+  args:
+    creates: "{{ rustup_user_home }}/.cargo/bin/rustup"
+    executable: /bin/bash
+  environment:
+    TMPDIR: '{{ temp_install_dir.path }}'
+
+- name: Install cargo crates
+  shell: |
+    set -o pipefail
+    cargo install --list | \
+    awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
+    cargo install {{ item }}
+  with_items: "{{ cargo_crates|list }}"
+  register: crate_install_result
+  changed_when: "'Downloaded' in crate_install_result.stdout"
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/.cargo/bin"
+    TMPDIR: '{{ temp_install_dir.path }}'
+  when:
+    - cargo_crates is defined
+
+- name: Install rust runtime config
+  template:
+    src: "rustrc.j2"
+    dest: "{{ rustup_user_home }}/.rustrc"
+    owner: "{{ rustup_user }}"
+    mode: "0644"
+
+- name: Set shell RC file
+  set_fact:
+    rustup_shell_rc_settings_file: "{{ item.name }}"
+  when:
+    - rustup_user_shell is search(item.shell)
+    - rustup_shell_rc_settings_file is not defined
+  with_items:
+    - name: "{{ rustup_user_home }}/.bashrc"
+      shell: "bash"
+    - name: "{{ rustup_user_home }}/.zshrc"
+      shell: "zsh"
+
+- name: Enable rustrc at shell start
+  blockinfile:
+    dest: "{{ rustup_shell_rc_settings_file }}"
+    block: |
+      # Setup rustup, cargo path
+      [[ -f {{ rustup_user_home }}/.rustrc ]] || return 0
+      "source {{ rustup_user_home }}/.rustrc"
+    create: true
+    state: present
+  when:
+    - rustup_shell_rc_settings_file is defined
+    - rustup_configure_shell|default(true)
+

@@ -1,0 +1,30 @@
+---
+
+dependency:
+  name: galaxy
+driver:
+  name: podman
+lint:
+  name: yamllint
+platforms:
+  - name: rustup_install_${MOLECULE_DISTRIBUTION:-fedora30}
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-fedora30}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    tty: True
+    privileged: true
+    pre_build_image: yes
+provisioner:
+  name: ansible
+  options:
+    vvv: true
+  lint:
+    name: ansible-lint
+verifier:
+  name: testinfra
+  directory: ../shared/tests
+  env:
+    MOLECULE_SCENARIO: "default"
+  options:
+    verbose: true
+  lint:
+    name: flake8

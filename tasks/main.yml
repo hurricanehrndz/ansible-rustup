@@ -1,0 +1,22 @@
+---
+# tasks file for ansible-rustup
+- name: Set distro-specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}.yml'
+    - default.yml
+
+- name: Update repo cache
+  action: >
+    {{ ansible_pkg_mgr }} update_cache=yes
+
+- name: Install rustup system requirements
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ rustup_packages }}"
+
+- name: Install rustup, cargo and creates
+  import_tasks: install-rust.yml
+  become: true
+  become_user: "{{ rustup_user }}"

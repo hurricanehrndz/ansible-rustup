@@ -1,0 +1,34 @@
+---
+
+dist: bionic
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      env:
+        - ANSIBLE_VERSIONS_2="v2.9.0rc5"
+        - INSTALL_TYPE_2="git"
+        - ANSIBLE_LABEL_2="v2.9rc5"
+        - MOLECULE_SCENARIO="default"
+        - ANSIBLE_DEFAULT_VERSION="v2.9rc5"
+      python: "3.7"
+
+before_install:
+  - sudo add-apt-repository -y ppa:projectatomic/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq -y software-properties-common podman
+  - sudo mkdir -p /etc/containers
+  - sudo sh -c 'echo -e "[registries.search]\nregistries = [\"docker.io\"]" > /etc/containers/registries.conf'
+
+install: |
+  avm_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
+  git clone https://github.com/ahelal/avm.git "${avm_dir}" > /dev/null 2>&1
+  /bin/sh "${avm_dir}/setup.sh"
+  pip install testinfra "molecule[podman]"
+script:
+  - molecule --version
+  - ansible --version
+  - molecule test -s $TEST_SCENARIO
+
+notifications:
+    webhooks: https://galaxy.ansible.com/api/v1/notifications/
