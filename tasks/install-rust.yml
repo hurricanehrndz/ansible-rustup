@@ -81,4 +81,3 @@
   when:
     - rustup_shell_rc_settings_file is defined
     - rustup_configure_shell|default(true)
-
