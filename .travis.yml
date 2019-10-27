@@ -19,16 +19,18 @@ before_install:
   - sudo mkdir -p /etc/containers
   - sudo sh -c 'echo -e "[registries.search]\nregistries = [\"docker.io\"]" > /etc/containers/registries.conf'
 
-install: |
-  pip3 install -U pip
-  ansible_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
-  git clone -b "\'${ANSIBLE_VERSION\'" \
-    --single-branch \
-     --depth 1 \
-    https://github.com/ansible/ansible.git "${ansible-dir}" > /dev/null 2>&1
-  python3 "${ansible_dir}/setup.sh" install
-  pip3 install testinfra "molecule[podman]"
+install:
+  - pip3 install -U pip
+  - |
+    ansible_dir="$(mktemp -d 2> /dev/null || mktemp -d -t 'mytmpdir')"
+    git clone -b "\'${ANSIBLE_VERSION}\'" \
+      --single-branch \
+      --depth 1 \
+      https://github.com/ansible/ansible.git "${ansible-dir}" > /dev/null 2>&1
+    python3 "${ansible_dir}/setup.sh" install
+  - pip3 install testinfra "molecule[podman]"
 script:
+  - python --version
   - molecule --version
   - ansible --version
   - molecule test -s $TEST_SCENARIO
