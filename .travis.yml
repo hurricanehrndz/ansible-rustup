@@ -27,7 +27,8 @@ install:
       --single-branch \
       --depth 1 \
       https://github.com/ansible/ansible "${ansible_dir}"
-    python3 "${ansible_dir}/setup.py" install
+    cd "${ansible_dir}"
+    python3 setup.py install
   - pip3 install testinfra "molecule[podman]"
 script:
   - python --version
