@@ -3,15 +3,21 @@
 dependency:
   name: galaxy
 driver:
-  name: podman
+  name: docker
 lint:
   name: yamllint
+  options:
+    config-data:
+      ignore: '.direnv/'
 platforms:
   - name: rustup_install_${MOLECULE_DISTRIBUTION:-fedora30}
     image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-fedora30}-ansible:latest"
     command: ${MOLECULE_COMMAND:-""}
-    tty: True
-    privileged: true
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     pre_build_image: yes
 provisioner:
   name: ansible
