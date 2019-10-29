@@ -9,6 +9,7 @@
 - name: Update repo cache
   action: >
     {{ ansible_pkg_mgr }} update_cache=yes
+  changed_when: false
 
 - name: Install rustup system requirements
   package:
