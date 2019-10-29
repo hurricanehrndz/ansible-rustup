@@ -10,21 +10,21 @@ matrix:
       language: python
       python: "3.8"
       env:
-        - ANSIBLE_VERSION="2.8"
+        - ANSIBLE='ansible>=2.8'
         - MOLECULE_SCENARIO="default"
     - os: linux
       services: docker
       language: python
       python: "3.8"
       env:
-        - ANSIBLE_VERSION="2.8"
+        - ANSIBLE='ansible>=2.8
         - MOLECULE_SCENARIO="default"
         - MOLECULE_DISTRIBUTION="ubuntu18"
 
 
 install:
   - pip3 install -U pip
-  - pip install ansible=="$ANSIBLE_VER.*" testinfra molecule docker
+  - pip install "$ANSIBLE" testinfra molecule docker
 script:
   - python --version
   - molecule --version
