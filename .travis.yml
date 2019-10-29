@@ -17,7 +17,7 @@ matrix:
       language: python
       python: "3.8"
       env:
-        - ANSIBLE='ansible>=2.8
+        - ANSIBLE='ansible>=2.8'
         - MOLECULE_SCENARIO="default"
         - MOLECULE_DISTRIBUTION="ubuntu18"
 
