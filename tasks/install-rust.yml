@@ -75,7 +75,7 @@
     block: |
       # Setup rustup, cargo path
       [[ -f {{ rustup_user_home }}/.rustrc ]] || return 0
-      "source {{ rustup_user_home }}/.rustrc"
+      source {{ rustup_user_home }}/.rustrc
     create: true
     state: present
   when:
