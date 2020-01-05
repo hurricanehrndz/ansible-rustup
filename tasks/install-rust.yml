@@ -70,14 +70,17 @@
       shell: "zsh"
 
 - name: Enable rustrc at shell start
-  blockinfile:
+  lineinfile:
     dest: "{{ rustup_shell_rc_settings_file }}"
-    block: |
-      # Setup rustup, cargo path
-      [[ -f {{ rustup_user_home }}/.rustrc ]] || return 0
-      source {{ rustup_user_home }}/.rustrc
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
     create: true
     state: present
+  with_items:
+    - regexp: '^# Setup rustup.*'
+      line: '# Setup rustup, cargo path'
+    - regexp: 'source.*rustrc$'
+      line: "[[ -f {{ rustup_user_home }}/.rustrc ]] && source {{ rustup_user_home }}/.rustrc"
   when:
     - rustup_shell_rc_settings_file is defined
     - rustup_configure_shell|default(true)
