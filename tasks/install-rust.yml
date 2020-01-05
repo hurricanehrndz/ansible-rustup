@@ -61,7 +61,7 @@
   set_fact:
     rustup_shell_rc_settings_file: "{{ item.name }}"
   when:
-    - rustup_user_shell is search(item.shell)
+    - rustup_user_shell|regex_replace('^.*/','') == item.shell
     - rustup_shell_rc_settings_file is not defined
   with_items:
     - name: "{{ rustup_user_home }}/.bashrc"
