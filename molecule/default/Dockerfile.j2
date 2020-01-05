@@ -1,0 +1,31 @@
+{% raw -%}
+# Molecule managed
+
+{% if item.registry is defined %}
+FROM {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM {{ item.image }}
+{% endif %}
+
+{% if item.env is defined %}
+{% for var, value in item.env.items() %}
+{% if value %}
+ENV {{ var }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+RUN rm -f /lib/systemd/system/getty.target \
+ && rm -f /lib/systemd/system/systemd*udev* \
+ && if [ -x "$(command -v dnf)" ]; then \
+      echo "fastestmirror=true" >> /etc/dnf/dnf.conf; \
+      echo "minrate=10k" >> /etc/dnf/dnf.conf; \
+      echo "timeout=10" >> /etc/dnf/dnf.conf; \
+      dnf makecache fast; \
+      dnf --assumeyes install bash; \
+    fi \
+ && if [ -x "$(command -v apt-get)" ]; then \
+      apt-get update && apt-get upgrade -y && apt-get install -y python sudo bash; \
+    fi
+
+{%- endraw %}
