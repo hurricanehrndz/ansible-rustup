@@ -15,7 +15,7 @@
   set_fact:
     rustup_user_shell: "{{ getent_passwd[rustup_user][5] }}"
 
-- name: create temporary install directory
+- name: Create temporary install directory
   tempfile:
     path: "{{ rustup_user_home }}"
     state: directory
