@@ -39,7 +39,7 @@
     cargo install --list | \
     awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
     cargo install {{ item }}
-  with_items: "{{ cargo_crates|list }}"
+  with_items: "{{ rustup_cargo_crates|list }}"
   register: crate_install_result
   changed_when: "'Downloaded' in crate_install_result.stdout"
   args:
@@ -48,7 +48,7 @@
     PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/.cargo/bin"
     TMPDIR: '{{ temp_install_dir.path }}'
   when:
-    - cargo_crates is defined
+    - rustup_cargo_crates is defined
 
 - name: Install rust runtime config
   template:
