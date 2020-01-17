@@ -1,5 +1,9 @@
 ---
 - name: Converge
   hosts: all
+  pre_tasks:
+    - name: Update repo cache
+      action: >
+        {{ ansible_pkg_mgr }} update_cache=yes
   roles:
     - role: ansible-rustup
