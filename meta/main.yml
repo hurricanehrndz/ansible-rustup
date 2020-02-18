@@ -13,6 +13,9 @@ galaxy_info:
    - name: Ubuntu
      versions:
       - bionic
+   - name: Archlinux
+     versions:
+       - all
 
   galaxy_tags: [rustup, rust, cargo]
 

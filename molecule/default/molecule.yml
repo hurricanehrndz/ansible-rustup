@@ -1,5 +1,4 @@
 ---
-
 dependency:
   name: galaxy
 driver:
@@ -11,15 +10,12 @@ lint:
       ignore: '.direnv/'
 platforms:
   - name: rustup_install_${MOLECULE_DISTRIBUTION:-fedora30}
-    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-fedora30}-ansible:latest"
+    image: "${MOLECULE_IMAGE:-quay.io/samdoran/ubuntu18-ansible}"
     command: ${MOLECULE_COMMAND:-""}
-    tmpfs:
-      - /run
-      - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
-    pre_build_image: no
+    pre_build_image: false
 provisioner:
   name: ansible
   options:

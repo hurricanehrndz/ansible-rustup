@@ -1,9 +1,15 @@
 ---
 - name: Converge
   hosts: all
-  pre_tasks:
-    - name: Update repo cache
-      action: >
-        {{ ansible_pkg_mgr }} update_cache=yes
-  roles:
-    - role: ansible-rustup
+  tasks:
+    - name: Adjust id on manjaro
+      lineinfile:
+        dest: /etc/os-release
+        regexp: 'ID=.*'
+        line: 'ID=arch'
+        state: present
+      when: ansible_os_family == "Archlinux"
+
+    - name: run ansible-rustup role
+      include_role:
+        name: ansible-rustup

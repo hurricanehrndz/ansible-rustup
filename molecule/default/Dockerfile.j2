@@ -14,12 +14,25 @@ ENV {{ var }} {{ value }}
 {% endfor %}
 {% endif %}
 
-RUN rm -rf /lib/systemd/system/getty* \
- && rm -rf /etc/systemd/system/getty* \
- && rm -rf /lib/systemd/system/multi-user.target.wants/getty* \
- && rm -rf /lib/systemd/system/systemd*udev* \
- && systemctl mask getty.target || true \
- && systemctl mask getty.slice || true \
+RUN systemctl mask dev-mqueue.mount dev-hugepages.mount \
+    systemd-remount-fs.service sys-kernel-config.mount \
+    sys-kernel-debug.mount sys-fs-fuse-connections.mount \
+    systemd-logind.service getty.service getty.target \
+    systemd-networkd.service systemd-resolved.service \
+    systemd-timesyncd.service \
+ && (find /etc/systemd/system -wholename "*.wants/*" -exec rm -vf {} \+ ;) \
+ && (cd /lib/systemd/system; find ./ -wholename "*.wants/*.mount" -exec rm -vf {} \+ ;) \
+ && (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+    rm -vf /lib/tmpfiles.d/systemd-nologin.conf; \
+    rm -vf /lib/systemd/system/multi-user.target.wants/*; \
+    rm -vf /etc/systemd/system/*.wants/*; \
+    rm -vf /etc/systemd/system/sysinit.target.wants/*; \
+    rm -vf /lib/systemd/system/local-fs.target.wants/*; \
+    rm -vf /lib/systemd/system/sockets.target.wants/*udev*; \
+    rm -vf /lib/systemd/system/sockets.target.wants/*initctl*; \
+    rm -vf /lib/systemd/system/basic.target.wants/*; \
+    rm -vf /lib/systemd/system/anaconda.target.wants/*; \
+    rm -vf /lib/systemd/system/systemd*udev* \
  && if [ -x "$(command -v dnf)" ]; then \
       echo "fastestmirror=true" >> /etc/dnf/dnf.conf; \
       echo "minrate=10k" >> /etc/dnf/dnf.conf; \
@@ -28,5 +41,12 @@ RUN rm -rf /lib/systemd/system/getty* \
       dnf --assumeyes install bash; \
     fi \
  && if [ -x "$(command -v apt-get)" ]; then \
-      apt-get update && apt-get upgrade -y && apt-get install -y python sudo bash; \
+      apt-get update && apt-get upgrade -y && apt-get install -y sudo bash; \
+    fi \
+ && if [ -x "$(command -v pacman)" ]; then \
+      pacman -S -y; \
+      pacman -S --noconfirm ansible sudo; \
     fi
+
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+CMD ["/lib/systemd/systemd"]

@@ -1,5 +1,4 @@
 ---
-
 dist: bionic
 
 matrix:
@@ -19,7 +18,17 @@ matrix:
       env:
         - ANSIBLE='ansible>=2.8'
         - MOLECULE_SCENARIO="default"
-        - MOLECULE_DISTRIBUTION="ubuntu18"
+        - MOLECULE_DISTRIBUTION="archlinux"
+        - MOLECULE_IMAGE="manjarolinux/base:latest"
+    - os: linux
+      env:
+        - ANSIBLE='ansible>=2.8'
+        - MOLECULE_SCENARIO="default"
+        - MOLECULE_DISTRIBUTION="fedora30"
+        - MOLECULE_IMAGE="quay.io/samdoran/ubuntu18-ansible"
+      services: docker
+      language: python
+      python: "3.8"
 
 
 install:
