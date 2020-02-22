@@ -3,25 +3,24 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
-  options:
-    config-data:
-      ignore: '.direnv/'
+lint: |
+    yamllint .
+    ansible-lint
+    flake8
 platforms:
   - name: rustup_install_${MOLECULE_DISTRIBUTION:-fedora30}
     image: "${MOLECULE_IMAGE:-quay.io/samdoran/ubuntu18-ansible}"
     command: ${MOLECULE_COMMAND:-""}
+    tmpfs:
+      - /run
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: false
+    pre_build_image: False
+    privileged: True
 provisioner:
   name: ansible
   options:
     vvv: true
-  lint:
-    name: ansible-lint
 verifier:
   name: testinfra
   directory: ../shared/tests
@@ -29,5 +28,3 @@ verifier:
     MOLECULE_SCENARIO: "default"
   options:
     verbose: true
-  lint:
-    name: flake8

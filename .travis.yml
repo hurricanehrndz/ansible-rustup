@@ -30,10 +30,10 @@ matrix:
       language: python
       python: "3.8"
 
-
 install:
   - pip3 install -U pip
-  - pip install "$ANSIBLE" testinfra molecule docker
+  - pip install "$ANSIBLE" testinfra molecule docker flake8 ansible-lint yamllint
+
 script:
   - python --version
   - molecule --version
