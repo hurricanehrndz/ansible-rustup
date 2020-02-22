@@ -7,11 +7,11 @@
     key: "{{ rustup_user }}"
     split: ":"
 
-- name: set rustup user home
+- name: Define rustup user home
   set_fact:
     rustup_user_home: "{{ getent_passwd[rustup_user][4] }}"
 
-- name: set rustup user shell
+- name: Define rustup user shell
   set_fact:
     rustup_user_shell: "{{ getent_passwd[rustup_user][5] }}"
 
@@ -23,7 +23,7 @@
   register: temp_install_dir
   changed_when: false
 
-- name: "Install RustUp"
+- name: Install RustUp
   shell: |
     set -o pipefail
     curl https://sh.rustup.rs -sSf | sh -s -- -y
