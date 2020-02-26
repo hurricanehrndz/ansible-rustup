@@ -41,7 +41,7 @@
     cargo install {{ item }}
   with_items: "{{ rustup_cargo_crates|list }}"
   register: crate_install_result
-  changed_when: "'Installed package' in crate_install_result.stdout"
+  changed_when: "'Installed package' in crate_install_result.stderr"
   args:
     executable: /bin/bash
   environment:
