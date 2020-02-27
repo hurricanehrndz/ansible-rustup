@@ -7,6 +7,8 @@
     - default.yml
 
 - name: Install rustup system requirements
+  become: true
+  become_user: root
   package:
     name: "{{ item }}"
     state: present
