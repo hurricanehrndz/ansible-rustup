@@ -44,7 +44,7 @@ RUN systemctl mask dev-mqueue.mount dev-hugepages.mount \
       apt-get update && apt-get upgrade -y && apt-get install -y sudo bash; \
     fi \
  && if [ -x "$(command -v pacman)" ]; then \
-      pacman -S -y; \
+      pacman -Syyu --noconfirm; \
       pacman -S --noconfirm ansible sudo; \
     fi
 
