@@ -1,0 +1,6 @@
+#!/bin/bash
+
+molecule lint -s $MOLECULE_SCENARIO \
+ && molecule converge -s $MOLECULE_SCENARIO \
+ && molecule idempotence -s $MOLECULE_SCENARIO \
+ && molecule verify -s $MOLECULE_SCENARIO

@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        tests:
+          - distro: "archlinux"
+            img: "archlinux/current"
+          - distro: "ubuntu"
+            img: "ubuntu/focal"
+          - distro: "fedora"
+            img: "fedora/33"
+
+    steps:
+      - name: Configure LXD
+        run: |
+          sudo /snap/bin/lxd.migrate -yes || true
+          sudo /snap/bin/lxd waitready
+          sudo /snap/bin/lxd init --auto
+          sudo usermod -a -G lxd ${USER}
+
+      - name: Show LXD Info
+        run: |
+          sg lxd -c "/snap/bin/lxc info"
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+      - uses: actions/checkout@v2
+        with:
+          path: rustup
+
+      - name: Install molecule dependency
+        run: |
+          pip3 install -r requirements.txt
+        working-directory: rustup
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Show version info of tools
+        run: |
+          python --version
+          molecule --version
+          ansible --version
+
+      - name: Run molecule test
+        run: |
+          sg lxd -c "molecule debug test}"
+        working-directory: rustup
+        env:
+          MLDISTRO: ${{ matrix.tests.distro }}
+          MLIMG: ${{ matrix.tests.img }}

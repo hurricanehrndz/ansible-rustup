@@ -1,0 +1,49 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ not lookup('env', 'MOLECULE_DEBUG') | bool }}"
+  tasks:
+    - name: Create molecule instance(s)
+      lxd_container:
+        name: "{{ item.name }}"
+        state: started
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org
+          protocol: simplestreams
+          alias: "{{ item.alias }}/amd64"
+        profiles: ["default"]
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Install Python in container
+      delegate_to: "{{ item.name }}"
+      raw: apt-get install -y python
+      with_items: "{{ molecule_yml.platforms }}"
+      when: item.alias is match("ubuntu.*")
+
+    - block:
+      - name: Make dnf faster
+        delegate_to: "{{ item.name }}"
+        raw: |
+          dnf remove -y fedora-repos-modular
+          dnf install -y dnf-plugin-config-manager
+          dnf config-manager --setopt=fastestmirror=True --save
+          dnf makecache
+        with_items: "{{ molecule_yml.platforms }}"
+
+      - name: Install Python in container
+        delegate_to: "{{ item.name }}"
+        raw: dnf install -y python
+        with_items: "{{ molecule_yml.platforms }}"
+      when: item.alias is match("fedora.*")
+
+    - name: Install Python in container
+      delegate_to: "{{ item.name }}"
+      raw: pacman -Syyu --noconfirm python3
+      with_items: "{{ molecule_yml.platforms }}"
+      when: item.alias is match("^archlinux.*")

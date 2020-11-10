@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export MLDISTRO="ubuntu"
+export MLIMG="ubuntu/focal"
+# https://github.com/ansible/ansible/issues/67004
+export ANSIBLE_PIPELINING=false

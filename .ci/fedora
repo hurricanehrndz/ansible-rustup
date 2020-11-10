@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export MLDISTRO="fedora"
+export MLIMG="fedora/33"
+# https://github.com/ansible/ansible/issues/67004
+export ANSIBLE_PIPELINING=false

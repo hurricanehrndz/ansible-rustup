@@ -2,25 +2,20 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: lxd
 lint: |
     yamllint .
     ansible-lint
     flake8
 platforms:
-  - name: rustup_install_${MOLECULE_DISTRIBUTION:-fedora30}
-    image: "${MOLECULE_IMAGE:-quay.io/samdoran/ubuntu18-ansible}"
-    command: ${MOLECULE_COMMAND:-""}
-    tmpfs:
-      - /run
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    pre_build_image: False
-    privileged: True
+  - name: "rustup-${MLDISTRO:-focal}"
+    alias: "${MLIMG:-ubuntu/focal}"
 provisioner:
   name: ansible
-  options:
-    vvv: true
+  playbooks:
+    create: ../resources/playbooks/create.yml
+    converge: ../resources/playbooks/converge.yml
+    destroy: ../resources/playbooks/destroy.yml
 verifier:
   name: testinfra
   directory: ../shared/tests

@@ -1,43 +1,33 @@
 ---
-dist: bionic
-
-matrix:
+dist: focal
   fast_finish: true
   include:
     - os: linux
-      services: docker
-      language: python
-      python: "3.8"
       env:
         - ANSIBLE='ansible>=2.8'
         - MOLECULE_SCENARIO="default"
-    - os: linux
-      services: docker
       language: python
       python: "3.8"
-      env:
-        - ANSIBLE='ansible>=2.8'
-        - MOLECULE_SCENARIO="default"
-        - MOLECULE_DISTRIBUTION="archlinux"
-        - MOLECULE_IMAGE="manjarolinux/base:latest"
-    - os: linux
-      env:
-        - ANSIBLE='ansible>=2.8'
-        - MOLECULE_SCENARIO="default"
-        - MOLECULE_DISTRIBUTION="fedora30"
-        - MOLECULE_IMAGE="quay.io/samdoran/ubuntu18-ansible"
-      services: docker
-      language: python
-      python: "3.8"
-
+      addons:
+        snaps:
+          - name: lxd
+            channel: stable
+git:
+  clone: false
 install:
+  - git clone https://github.com/$TRAVIS_REPO_SLUG.git rustup
+  - cd rustup
+  - sudo apt update
+  - sudo /snap/bin/lxd waitready
+  - sudo /snap/bin/lxd init --auto
+  - sudo chgrp travis /var/snap/lxd/common/lxd/unix.socket
   - pip3 install -U pip
-  - pip install "$ANSIBLE" testinfra molecule docker flake8 ansible-lint yamllint
-
+  - pip3 install "$ANSIBLE" testinfra molecule docker flake8 ansible-lint yamllint
 script:
   - python --version
   - molecule --version
   - ansible --version
+  - ansible-lint --version
   - molecule test -s $MOLECULE_SCENARIO
 
 notifications:

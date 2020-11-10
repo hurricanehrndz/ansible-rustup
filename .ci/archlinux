@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export MLDISTRO="archlinux"
+export MLIMG="archlinux/current"
+# https://github.com/ansible/ansible/issues/67004
+export ANSIBLE_PIPELINING=false
