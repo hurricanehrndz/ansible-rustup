@@ -20,14 +20,14 @@
         timeout: 600
       with_items: "{{ molecule_yml.platforms }}"
 
-    - name: Install Python in container
+    - name: "[Ubuntu] Install pre-requisites"
       delegate_to: "{{ item.name }}"
-      raw: apt-get install -y python
+      raw: apt-get install -y python sudo bash
       with_items: "{{ molecule_yml.platforms }}"
       when: item.alias is match("ubuntu.*")
 
     - block:
-      - name: Make dnf faster
+      - name: "[Fedora] Make dnf faster"
         delegate_to: "{{ item.name }}"
         raw: |
           dnf remove -y fedora-repos-modular
@@ -36,14 +36,19 @@
           dnf makecache
         with_items: "{{ molecule_yml.platforms }}"
 
-      - name: Install Python in container
+      - name: "[Fedora] Install pre-requisites"
         delegate_to: "{{ item.name }}"
-        raw: dnf install -y python
+        raw: dnf install -y python sudo bash
         with_items: "{{ molecule_yml.platforms }}"
       when: item.alias is match("fedora.*")
 
-    - name: Install Python in container
-      delegate_to: "{{ item.name }}"
-      raw: pacman -Syyu --noconfirm python3
-      with_items: "{{ molecule_yml.platforms }}"
+    - block:
+      - name: "[Archlinux] Install pre-requisites"
+        delegate_to: "{{ item.name }}"
+        raw: |
+          pacman -S --noconfirm \
+            bash                \
+            sudo                \
+            python
+        with_items: "{{ molecule_yml.platforms }}"
       when: item.alias is match("^archlinux.*")

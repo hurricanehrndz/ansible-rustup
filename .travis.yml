@@ -17,12 +17,11 @@ git:
 install:
   - git clone https://github.com/$TRAVIS_REPO_SLUG.git rustup
   - cd rustup
-  - sudo apt update
   - sudo /snap/bin/lxd waitready
   - sudo /snap/bin/lxd init --auto
   - sudo chgrp travis /var/snap/lxd/common/lxd/unix.socket
   - pip3 install -U pip
-  - pip3 install "$ANSIBLE" testinfra molecule docker flake8 ansible-lint yamllint
+  - pip3 install requirements.txt
 script:
   - python --version
   - molecule --version
