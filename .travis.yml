@@ -22,7 +22,7 @@ install:
   - sudo /snap/bin/lxd init --auto
   - sudo chgrp travis /var/snap/lxd/common/lxd/unix.socket
   - pip3 install -U pip
-  - pip3 install requirements.txt
+  - pip3 install -r requirements.txt
 script:
   - python --version
   - molecule --version
