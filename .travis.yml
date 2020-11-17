@@ -1,5 +1,6 @@
 ---
 dist: focal
+matrix:
   fast_finish: true
   include:
     - os: linux
@@ -7,7 +8,7 @@ dist: focal
         - ANSIBLE='ansible>=2.8'
         - MOLECULE_SCENARIO="default"
       language: python
-      python: "3.8"
+      python: "3.9"
       addons:
         snaps:
           - name: lxd
