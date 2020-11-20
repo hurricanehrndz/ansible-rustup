@@ -70,7 +70,7 @@
       shell: "zsh"
 
 - name: Enable rustrc at shell start
-  lineinfile:
+  lineinfile: # noqa 208
     dest: "{{ rustup_shell_rc_settings_file }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
