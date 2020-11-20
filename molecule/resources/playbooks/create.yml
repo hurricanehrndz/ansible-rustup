@@ -46,6 +46,7 @@
       - name: "[Archlinux] Install pre-requisites"
         delegate_to: "{{ item.name }}"
         raw: |
+          pacman -Syy
           pacman -S --noconfirm \
             bash                \
             sudo                \
