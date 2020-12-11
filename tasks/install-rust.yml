@@ -28,10 +28,12 @@
     set -o pipefail
     curl https://sh.rustup.rs -sSf | sh -s -- -y
   args:
-    creates: "{{ rustup_user_home }}/.cargo/bin/rustup"
+    creates: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin/rustup"
     executable: /bin/bash
   environment:
     TMPDIR: '{{ temp_install_dir.path }}'
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
 
 - name: Install cargo crates
   shell: |
@@ -45,8 +47,10 @@
   args:
     executable: /bin/bash
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/.cargo/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
     TMPDIR: '{{ temp_install_dir.path }}'
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
   when:
     - rustup_cargo_crates is defined
 

@@ -2,6 +2,10 @@
 # defaults file for ansible-rustup
 rustup_user: "{{ ansible_env.USER | default('root') }}"
 
+rustup_home_suffix: ".rustup"
+
+rustup_cargo_home_suffix: ".cargo"
+
 rustup_cargo_crates:
   - fd-find
   - ripgrep
