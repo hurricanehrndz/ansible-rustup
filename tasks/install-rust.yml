@@ -60,11 +60,14 @@
     dest: "{{ rustup_user_home }}/.rustrc"
     owner: "{{ rustup_user }}"
     mode: "0644"
+  when:
+    - rustup_configure_shell|default(true)
 
 - name: Set shell RC file
   set_fact:
     rustup_shell_rc_settings_file: "{{ item.name }}"
   when:
+    - rustup_configure_shell|default(true)
     - rustup_user_shell|regex_replace('^.*/','') == item.shell
     - rustup_shell_rc_settings_file is not defined
   with_items:
