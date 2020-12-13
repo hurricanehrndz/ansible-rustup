@@ -14,7 +14,7 @@ Install rust and user defined cargo crates via rustup using `https://sh.rustup.r
 | rustup_home_suffix       | .rustup            | string     | Install destination (~/ + suffix)                    |
 | rustup_cargo_home_suffix | .cargo             | string     | Install destination (~/ + suffix)                    |
 | rustup_cargo_crates      | [fd-find, ripgrep] | Array      | List of crates to install from cargo.                |
-| rustup_config_user_shell | true               | Boolean    | Adds {HOME/.cargo/bin} to user's PATH                |
+| rustup_configure_shell   | true               | Boolean    | Adds {HOME/.cargo/bin} to user's PATH                |
 
 ## Example Playbook
 
