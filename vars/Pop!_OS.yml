@@ -1,0 +1,5 @@
+---
+rustup_packages:
+  - curl
+  - gcc
+  - make
