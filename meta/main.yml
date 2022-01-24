@@ -16,6 +16,9 @@ galaxy_info:
    - name: Archlinux
      versions:
        - all
+   - name: macOS
+     versions:
+      - all
 
   galaxy_tags: [rustup, rust, cargo]
 
