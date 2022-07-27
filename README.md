@@ -21,7 +21,7 @@ Install rust and user defined cargo crates via rustup using `https://sh.rustup.r
 ```yaml
 - hosts: servers
   roles:
-    - role: ansible-rustup
+    - role: hurricanehrndz.rustup
 ```
 
 ## License
