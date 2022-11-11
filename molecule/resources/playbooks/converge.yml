@@ -3,13 +3,13 @@
   hosts: all
   tasks:
     - name: Adjust id on manjaro
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/os-release
         regexp: 'ID=.*'
         line: 'ID=arch'
         state: present
       when: ansible_os_family == "Archlinux"
 
-    - name: run ansible-rustup role
-      include_role:
+    - name: Run ansible-rustup role
+      ansible.builtin.include_role:
         name: rustup

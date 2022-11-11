@@ -1,0 +1,41 @@
+- name: Define rustup user shell
+  ansible.builtin.set_fact:
+    rustup_user_shell: "{{ getent_passwd[rustup_user][5] }}"
+
+- name: Install rust runtime config
+  ansible.builtin.template:
+    src: "rustrc.j2"
+    dest: "{{ rustup_user_home }}/.rustrc"
+    mode: "0644"
+  when:
+    - rustup_configure_shell|default(true)
+
+- name: Set shell RC file
+  ansible.builtin.set_fact:
+    rustup_shell_rc_settings_file: "{{ item.name }}"
+  when:
+    - rustup_configure_shell|default(true)
+    - rustup_user_shell|regex_replace('^.*/','') == item.shell
+    - rustup_shell_rc_settings_file is not defined
+  with_items:
+    - name: "{{ rustup_user_home }}/.bashrc"
+      shell: "bash"
+    - name: "{{ rustup_user_home }}/.zshrc"
+      shell: "zsh"
+
+- name: Enable rustrc at shell start
+  ansible.builtin.lineinfile: # noqa risky-file-permissions
+    dest: "{{ rustup_shell_rc_settings_file }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    create: true
+    state: present
+    mode: "0644"
+  with_items:
+    - regexp: '^# Setup rustup.*'
+      line: '# Setup rustup, cargo path'
+    - regexp: 'source.*rustrc$'
+      line: "[[ -f {{ rustup_user_home }}/.rustrc ]] && source {{ rustup_user_home }}/.rustrc"
+  when:
+    - rustup_shell_rc_settings_file is defined
+    - rustup_configure_shell|default(true)
