@@ -1,12 +1,13 @@
+# noqa no-changed-when
 ---
 - name: Create
   hosts: localhost
   connection: local
   gather_facts: false
   no_log: "{{ not lookup('env', 'MOLECULE_DEBUG') | bool }}"
-  tasks:
+  tasks: # noqa no-changed-when
     - name: Create molecule instance(s)
-      lxd_container:
+      community.general.lxd_container:
         name: "{{ item.name }}"
         state: started
         source:
@@ -22,34 +23,37 @@
 
     - name: "[Ubuntu] Install pre-requisites"
       delegate_to: "{{ item.name }}"
-      raw: apt-get install -y python sudo bash
+      ansible.builtin.raw: apt-get install -y python sudo bash
       with_items: "{{ molecule_yml.platforms }}"
       when: item.alias is match("ubuntu.*")
 
-    - block:
-      - name: "[Fedora] Make dnf faster"
-        delegate_to: "{{ item.name }}"
-        raw: |
-          dnf remove -y fedora-repos-modular
-          dnf install -y dnf-plugin-config-manager
-          dnf config-manager --setopt=fastestmirror=True --save
-          dnf makecache
-        with_items: "{{ molecule_yml.platforms }}"
-
-      - name: "[Fedora] Install pre-requisites"
-        delegate_to: "{{ item.name }}"
-        raw: dnf install -y python sudo bash
-        with_items: "{{ molecule_yml.platforms }}"
+    - name: Fedora
       when: item.alias is match("fedora.*")
+      block:
+        - name: "[Fedora] Make dnf faster" # noqa no-changed-when
+          delegate_to: "{{ item.name }}"
+          ansible.builtin.raw: |
+            dnf remove -y fedora-repos-modular
+            dnf install -y dnf-plugin-config-manager
+            dnf config-manager --setopt=fastestmirror=True --save
+            dnf makecache
+          with_items: "{{ molecule_yml.platforms }}"
 
-    - block:
-      - name: "[Archlinux] Install pre-requisites"
-        delegate_to: "{{ item.name }}"
-        raw: |
-          pacman -Sy
-          pacman -S --noconfirm \
-            bash                \
-            sudo                \
-            python
-        with_items: "{{ molecule_yml.platforms }}"
+        - name: "[Fedora] Install pre-requisites" # noqa no-changed-when
+          delegate_to: "{{ item.name }}"
+          ansible.builtin.raw: dnf install -y python sudo bash
+          with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Block for ArchLinux prereqs # noqa no-changed-when
       when: item.alias is match("^archlinux.*")
+      block:
+        - name: "[Archlinux] Install pre-requisites" # noqa no-changed-when
+          delegate_to: "{{ item.name }}"
+          ansible.builtin.raw: |
+            pacman -Sy
+            pacman -S --noconfirm \
+              bash                \
+              sudo                \
+              python
+          with_items: "{{ molecule_yml.platforms }}"
+      

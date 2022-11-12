@@ -1,0 +1,31 @@
+---
+- name: Set default toolchain version
+  ansible.builtin.command:
+    argv:
+      - rustup
+      - default
+      - "{{ rust_default_toolchain }}"
+  environment:
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
+    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
+  when: active_rustup_toolchain_version is undefined or active_rustup_toolchain_version != rust_default_toolchain
+
+- name: Install cargo crates
+  ansible.builtin.shell: |
+    set -o pipefail
+    cargo install --list | \
+    awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
+    cargo install {{ item }}
+  with_items: "{{ rustup_cargo_crates | list }}"
+  register: crate_install_result
+  changed_when: "'Installed package' in crate_install_result.stderr"
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
+    TMPDIR: '{{ temp_install_dir.path }}'
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
+  when:
+    - rustup_cargo_crates is defined
