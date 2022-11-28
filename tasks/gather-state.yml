@@ -23,7 +23,7 @@
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
     PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
-  when: rustup_exe_status is succeeded
+  when: rustup_exe_status.stat.exists
   changed_when: false
   ignore_errors: true
 
