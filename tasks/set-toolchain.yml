@@ -4,12 +4,12 @@
     argv:
       - rustup
       - default
-      - "{{ rust_default_toolchain }}"
+      - "{{ rustup_default_version }}"
   environment:
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
     PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
-  when: active_rustup_toolchain_version is undefined or active_rustup_toolchain_version != rust_default_toolchain
+  when: active_rustup_toolchain_version is undefined or active_rustup_toolchain_version != rustup_default_version
 
 - name: Install cargo crates
   ansible.builtin.shell: |

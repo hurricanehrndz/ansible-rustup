@@ -34,7 +34,7 @@
 
     - name: Set specified toolchain version as default, implicitly installing if necessary
       ansible.builtin.import_tasks: set-toolchain.yml
-      when: rustup_exe is undefined or active_rustup_toolchain_version != rust_default_toolchain
+      when: rustup_exe is undefined or active_rustup_toolchain_version != rustup_default_version
 
     - name: Apply configuration (shellrc, etc.)
       ansible.builtin.import_tasks: configure.yml
