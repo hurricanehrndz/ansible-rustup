@@ -30,11 +30,11 @@
     # Set the path to the rustup
     - name: Download rustup
       ansible.builtin.import_tasks: get-rustup.yml
-      when: rustup_exe_status is failed
+      when: not rustup_exe_status.stat.exists
 
     - name: Set specified toolchain version as default, implicitly installing if necessary
       ansible.builtin.import_tasks: set-toolchain.yml
-      when: rustup_exe is undefined or active_rustup_toolchain_version != rustup_default_version
+      when: not rustup_exe_status.stat.exists or active_rustup_toolchain_version != rust_default_toolchain
 
     - name: Apply configuration (shellrc, etc.)
       ansible.builtin.import_tasks: configure.yml
