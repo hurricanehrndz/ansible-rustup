@@ -8,6 +8,5 @@
     creates: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin/rustup"
     executable: /bin/bash
   environment:
-    TMPDIR: '{{ temp_install_dir.path }}'
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"

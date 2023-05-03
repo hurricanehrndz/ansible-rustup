@@ -20,13 +20,6 @@
     - name: Gather state to determine necessary tasks
       ansible.builtin.import_tasks: gather-state.yml
 
-    - name: Create temporary install directory
-      ansible.builtin.tempfile:
-        path: "{{ rustup_user_home }}"
-        state: directory
-        suffix: .install
-      register: temp_install_dir
-
     # Unable to find rustup executable where we expected it, go get rustup
     # Set the path to the rustup
     - name: Download rustup
@@ -39,9 +32,3 @@
     - name: Apply configuration (shellrc, etc.)
       ansible.builtin.import_tasks: configure-shell.yml
       when: rustup_configure_shell
-
-    - name: Remove temporary install directory
-      ansible.builtin.file:
-        path: "{{ temp_install_dir.path }}"
-        state: absent
-      changed_when: false
