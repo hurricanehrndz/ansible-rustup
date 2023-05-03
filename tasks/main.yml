@@ -1,9 +1,10 @@
 ---
+
 - name: Set distro-specific variables
   ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
     - '{{ ansible_os_family }}.yml'
-    - default.yml
+    - main.yml
 
 - name: Install rustup system requirements
   ansible.builtin.package:
