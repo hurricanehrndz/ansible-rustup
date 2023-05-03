@@ -10,6 +10,7 @@
   ansible.builtin.package:
     name: "{{ rustup_packages }}"
     state: present
+  become: true
 
 - name: Primary block, running tasks as specified rustup user
   become: true
@@ -25,20 +26,19 @@
         state: directory
         suffix: .install
       register: temp_install_dir
-      changed_when: false
 
     # Unable to find rustup executable where we expected it, go get rustup
     # Set the path to the rustup
     - name: Download rustup
-      ansible.builtin.import_tasks: get-rustup.yml
+      ansible.builtin.import_tasks: install-rustup.yml
       when: not rustup_exe_status.stat.exists
 
     - name: Set specified toolchain version as default, implicitly installing if necessary
       ansible.builtin.import_tasks: set-toolchain.yml
-      when: not rustup_exe_status.stat.exists or active_rustup_toolchain_version != rust_default_toolchain
 
     - name: Apply configuration (shellrc, etc.)
-      ansible.builtin.import_tasks: configure.yml
+      ansible.builtin.import_tasks: configure-shell.yml
+      when: rustup_configure_shell
 
     - name: Remove temporary install directory
       ansible.builtin.file:

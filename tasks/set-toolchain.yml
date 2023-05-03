@@ -1,10 +1,8 @@
 ---
+
 - name: Set default toolchain version
   ansible.builtin.command:
-    argv:
-      - rustup
-      - default
-      - "{{ rustup_default_version }}"
+    cmd: rustup default "{{ rustup_default_version }}"
   environment:
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
@@ -17,11 +15,11 @@
     cargo install --list | \
     awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
     cargo install {{ item }}
+  args:
+    executable: /bin/bash
   with_items: "{{ rustup_cargo_crates | list }}"
   register: crate_install_result
   changed_when: "'Installed package' in crate_install_result.stderr"
-  args:
-    executable: /bin/bash
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
     TMPDIR: '{{ temp_install_dir.path }}'

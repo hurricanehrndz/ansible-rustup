@@ -1,3 +1,5 @@
+---
+
 - name: Get rustup_user home
   ansible.builtin.getent:
     database: passwd
@@ -28,7 +30,10 @@
   ignore_errors: true
 
 - name: Get currently active toolchain if installed and set
-  when: rustup_default_output is defined and rustup_default_output.failed is false
+  when: 
+    - rustup_default_output is defined 
+    - not rustup_default_output is skipped 
+    - not rustup_default_output.failed 
   block:
     - name: Print current / active toolchain version
       ansible.builtin.debug:
