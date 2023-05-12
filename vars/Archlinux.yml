@@ -1,4 +1,5 @@
 ---
+
 rustup_packages:
   - curl
   - base-devel

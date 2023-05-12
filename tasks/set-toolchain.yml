@@ -1,10 +1,31 @@
 ---
+
+- name: Get active toolchain version
+  ansible.builtin.shell:
+    cmd: "rustup default | grep -Po '^.*?(?=-{{ ansible_architecture }})'"
+  register: rustup_default_output
+  environment:
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
+    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
+  changed_when: false
+  ignore_errors: true
+
+- name: Get currently active toolchain if installed and set
+  when: 
+    - not rustup_default_output.failed 
+  block:
+    - name: Print current / active toolchain version
+      ansible.builtin.debug:
+        msg: "{{ rustup_default_output.stdout_lines[0] }}"
+
+    - name: Set active_rustup_toolchain_version as fact
+      ansible.builtin.set_fact:
+        active_rustup_toolchain_version: '{{ rustup_default_output.stdout_lines[0] }}'
+
 - name: Set default toolchain version
   ansible.builtin.command:
-    argv:
-      - rustup
-      - default
-      - "{{ rustup_default_version }}"
+    cmd: rustup default "{{ rustup_default_version }}"
   environment:
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
@@ -17,14 +38,13 @@
     cargo install --list | \
     awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
     cargo install {{ item }}
+  args:
+    executable: /bin/bash
   with_items: "{{ rustup_cargo_crates | list }}"
   register: crate_install_result
   changed_when: "'Installed package' in crate_install_result.stderr"
-  args:
-    executable: /bin/bash
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
-    TMPDIR: '{{ temp_install_dir.path }}'
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
     CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
   when:
