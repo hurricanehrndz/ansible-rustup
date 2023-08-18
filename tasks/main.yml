@@ -28,7 +28,3 @@
 
     - name: Set specified toolchain version as default, implicitly installing if necessary
       ansible.builtin.import_tasks: set-toolchain.yml
-
-    - name: Apply configuration (shellrc, etc.)
-      ansible.builtin.import_tasks: configure-shell.yml
-      when: rustup_configure_shell
