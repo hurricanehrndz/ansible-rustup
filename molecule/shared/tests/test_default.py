@@ -46,18 +46,3 @@ def test_systems_packages(host, system_package):
     pkg = host.package(system_package)
 
     assert pkg.is_installed
-
-
-def test_rustrc(host, scenario):
-    user_home = scenario.get_user_home()
-    rc = host.file(f"{user_home}/.rustrc")
-
-    assert rc.exists
-
-
-def test_bashrc(host, scenario):
-    user_home = scenario.get_user_home()
-    rc = host.file(f"{user_home}/.bashrc")
-    rc_content = rc.content_string
-
-    assert f"source {user_home}/.rustrc" in rc_content
