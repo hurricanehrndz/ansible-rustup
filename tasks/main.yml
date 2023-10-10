@@ -10,7 +10,7 @@
   ansible.builtin.package:
     name: "{{ rustup_packages }}"
     state: present
-  become: "{{ ansible_facts['os_family'] != 'Darwin' }}"
+  become: true
 
 - name: Primary block, running tasks as specified rustup user
   become: true

@@ -9,8 +9,8 @@
 
 - name: Define rustup user home
   ansible.builtin.set_fact:
-    rustup_user_home: "{{ lookup('env', 'HOME', default='~') }}"
-    rustup_exe: "{{ lookup('env', 'HOME', default='~') }}/{{ rustup_cargo_home_suffix }}/bin/rustup"
+    rustup_user_home: "{{ getent_passwd[rustup_user][4] }}"
+    rustup_exe: "{{ getent_passwd[rustup_user][4] }}/{{ rustup_cargo_home_suffix }}/bin/rustup"
 
 - name: Check for presence of rustup executable
   ansible.builtin.stat:
