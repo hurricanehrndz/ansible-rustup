@@ -2,14 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: Adjust id on manjaro
-      ansible.builtin.lineinfile:
-        dest: /etc/os-release
-        regexp: 'ID=.*'
-        line: 'ID=arch'
-        state: present
-      when: ansible_os_family == "Archlinux"
-
     - name: Run ansible-rustup role
       ansible.builtin.include_role:
-        name: rustup
+        name: hurricanehrndz.rustup

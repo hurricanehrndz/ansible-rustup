@@ -7,14 +7,16 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 
 
 [tool.poetry.group.dev.dependencies]
-molecule = "^6.0.2"
 ansible = "^8.4.0"
 testinfra = "^6.0.0"
 ansible-lint = { version = "^6.20.0", markers = "platform_system != 'Windows'" }
+tox = "^4.11.3"
+molecule-plugins = {extras = ["docker"], version = "^23.5.0"}
+molecule = "^6.0.2"
 
 [build-system]
 requires = ["poetry-core"]
