@@ -1,0 +1,12 @@
+---
+
+- name: Install RustUp
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+  args:
+    creates: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin/rustup"
+    executable: /bin/bash
+  environment:
+    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
+    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"

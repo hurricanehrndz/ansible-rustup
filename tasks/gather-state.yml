@@ -1,3 +1,5 @@
+---
+
 - name: Get rustup_user home
   ansible.builtin.getent:
     database: passwd
@@ -14,27 +16,3 @@
   ansible.builtin.stat:
     path: '{{ rustup_exe }}'
   register: rustup_exe_status
-
-- name: Get active toolchain version
-  ansible.builtin.shell:
-    cmd: "rustup default | sed 's/armv7l/armv7/g' | grep -Po '^.*?(?=-{{ ansible_architecture }})'"
-  register: rustup_default_output
-  environment:
-    RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
-    CARGO_HOME: "{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}"
-    PATH: "{{ ansible_env.PATH }}:{{ rustup_user_home }}/{{ rustup_cargo_home_suffix }}/bin"
-  when: rustup_exe_status is succeeded
-  changed_when: false
-  ignore_errors: true
-
-- name: Get currently active toolchain if installed and set
-  when: rustup_default_output is defined and rustup_default_output.failed is false
-  block:
-    - name: Print current / active toolchain version
-      ansible.builtin.debug:
-        msg: "{{ rustup_default_output.stdout_lines[0] }}"
-
-    - name: Set active_rustup_toolchain_version as fact
-      ansible.builtin.set_fact:
-        active_rustup_toolchain_version: '{{ rustup_default_output.stdout_lines[0] }}'
-  
