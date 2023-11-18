@@ -1,7 +1,6 @@
 # hurricanehrndz.rustup
 
 [![Build Status][action-badge]][action-link]
-[![Ansible Role][ansible-badge]][ansible-link]
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/hurricanehrndz/ansible-rustup/master/LICENSE)
 
 Install rust and user defined cargo crates via rustup using `https://sh.rustup.rs`.
