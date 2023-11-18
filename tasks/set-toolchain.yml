@@ -2,7 +2,8 @@
 
 - name: Get active toolchain version
   ansible.builtin.shell:
-    cmd: "rustup default | sed 's/armv7l/armv7/g' | grep -Po '^.*?(?=-{{ ansible_architecture }})'"
+    cmd: |
+      rustup default | sed -n 's#\([^-]\+\).*#\1#p'
   register: rustup_default_output
   environment:
     RUSTUP_HOME: "{{ rustup_user_home }}/{{ rustup_home_suffix }}"
