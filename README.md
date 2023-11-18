@@ -33,5 +33,5 @@ Install rust and user defined cargo crates via rustup using `https://sh.rustup.r
 
 [ansible-badge]: https://img.shields.io/ansible/role/d/44247?style=for-the-badge
 [ansible-link]: https://galaxy.ansible.com/hurricanehrndz/rustup
-[action-badge]: https://img.shields.io/github/workflow/status/hurricanehrndz/ansible-rustup/CI?style=for-the-badge
+[action-badge]: https://github.com/hurricanehrndz/ansible-rustup/actions/workflows/main.yml/badge.svg
 [action-link]: https://github.com/hurricanehrndz/ansible-rustup/actions?query=workflow%3ACI
