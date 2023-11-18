@@ -11,12 +11,11 @@ python = "^3.10"
 
 
 [tool.poetry.group.dev.dependencies]
-ansible = "^8.4.0"
-testinfra = "^6.0.0"
-ansible-lint = { version = "^6.20.0", markers = "platform_system != 'Windows'" }
-tox = "^4.11.3"
+ansible = ">=8.4.0"
+testinfra = ">=6.0.0"
+ansible-lint = { version = ">=6.20.0", markers = "platform_system != 'Windows'" }
 molecule-plugins = {extras = ["docker"], version = "^23.5.0"}
-molecule = "^6.0.2"
+molecule = ">=6.0.2"
 
 [build-system]
 requires = ["poetry-core"]
