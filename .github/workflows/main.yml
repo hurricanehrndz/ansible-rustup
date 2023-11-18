@@ -18,15 +18,10 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: "python-3.10"
+          python-version: "3.10"
 
       - name: Install poetry
         uses: abatilo/actions-poetry@v2
-
-      - name: Show version info of tools
-        run: |
-          poetry run molecule --version
-          poetry run ansible --version
 
       - uses: actions/cache@v3
         name: Define a cache for the virtual environment based on the dependencies lock file
@@ -36,6 +31,11 @@ jobs:
 
       - name: Install the project dependencies
         run: poetry install
+
+      - name: Show version info of tools
+        run: |
+          poetry run molecule --version
+          poetry run ansible --version
 
       - name: Run molecule test
         run: |
