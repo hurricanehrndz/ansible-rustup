@@ -1,21 +1,34 @@
 ---
 dependency:
   name: galaxy
-driver:
-  name: lxd
+  options:
+    ignore-certs: True
+    ignore-errors: True
+    role-file: requirements.yml
+    requirements-file: collections.yml
 lint: |
     yamllint .
     ansible-lint
     flake8
+driver:
+  name: docker
 platforms:
-  - name: "rustup-${MLDISTRO:-focal}"
-    alias: "${MLIMG:-ubuntu/focal}"
+  - name: instance-${TOX_ENVNAME}
+    image: ${MOLECULE_DISTRO:-'fedora:latest'}
+    dockerfile: ../resources/Dockerfile.j2
+    cgroupns_mode: host
+    pre_build_image: false
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp:exec
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
 provisioner:
   name: ansible
   playbooks:
-    create: ../resources/playbooks/create.yml
     converge: ../resources/playbooks/converge.yml
-    destroy: ../resources/playbooks/destroy.yml
 verifier:
   name: testinfra
   directory: ../shared/tests

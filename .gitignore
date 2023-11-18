@@ -141,3 +141,18 @@ dmypy.json
 *.retry
 
 # End of https://www.gitignore.io/api/ansible
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+### direnv
+.direnv
+.envrc
+

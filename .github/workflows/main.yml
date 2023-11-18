@@ -11,59 +11,32 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        tests:
-          - distro: "archlinux"
-            img: "archlinux/current"
-          - distro: "ubuntu"
-            img: "ubuntu/focal"
-          - distro: "fedora"
-            img: "fedora/33"
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Configure LXD
-        run: |
-          sudo /snap/bin/lxd.migrate -yes || true
-          sudo /snap/bin/lxd waitready
-          sudo /snap/bin/lxd init --auto
-          sudo usermod -a -G lxd ${USER}
+      - uses: actions/checkout@v3
 
-      - name: Show LXD Info
-        run: |
-          sg lxd -c "/snap/bin/lxc info"
-
-      - uses: actions/setup-python@v2
+      - name: Install Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-          architecture: 'x64'
-      - uses: actions/checkout@v2
-        with:
-          path: rustup
+          python-version: "3.10"
 
-      - name: Install molecule dependency
-        run: |
-          pip3 install -r requirements.txt
-        working-directory: rustup
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Install the project dependencies
+        run: poetry install
 
       - name: Show version info of tools
         run: |
-          python --version
-          molecule --version
-          ansible --version
+          poetry run molecule --version
+          poetry run ansible --version
 
       - name: Run molecule test
         run: |
-          sg lxd -c "molecule test"
-        working-directory: rustup
-        env:
-          MLDISTRO: ${{ matrix.tests.distro }}
-          MLIMG: ${{ matrix.tests.img }}
+          poetry run molecule test
